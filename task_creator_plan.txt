@@ -1,0 +1,21 @@
+Each ticket can have one task associated with it in ZZZ's
+
+Flow - in a ticket click the Apps button
+     - select 'Create Task In ZZZ's'
+     - Main Page
+       - Parts
+         - what sort of task is this?  check_out/check_in/tear_down/not_time_constrained? - hidden field - required
+         - drop-down of ZZZ's users to select assignee (default to current assignee of ticket if any) - select - required
+         - date box - by default set to scheduled_for date of ticket - text field - required
+         - time box - can be empty if not a time-constrained item - text field - optional
+         - location - text field - optional
+         - Submit Button
+       - Responses
+         - 201 - created successfully
+           - If created successfully display success message with information about the task
+           - Custom field on ticket 'zzz_task_id' is set to the id returned in the success response
+           - 'Edit' button - edit details of task (change user/change time etc) - takes us back to Main Page - this time however the 'zzz_task_id' will be present and we will make a PUT request to update the task with that ID rather than creating a new one
+         - 500 - error
+           - Return list of reasons why task couldn't be created/updated and display
+           - If the tasks exists and couldn't be updated a link to its edit-page so that user can go and make changes as necessary
+           - 'Back' button to take us back to Main Page so we can try again

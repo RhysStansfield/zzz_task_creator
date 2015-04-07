@@ -1,0 +1,18 @@
+<form id='create-task'>
+  <input type='hidden' name='zzz_task_type' id='zzz_task_type' value='non_timed'>
+
+  <label for='user'>User</label>
+  <select name='user' id='user'>
+    {{#each users}}
+      <option value='{{this.id}}'>{{this.name}}</option>
+    {{/each}}
+  </select>
+
+  <label for='scheduled_for'>Scheduled For</label>
+  <input type='text' name='scheduled_for' id='scheduled_for' />
+
+  <label for='location'>Location</label>
+  <input type='text' name='location' id='location' />
+
+  <button id='add-task' class='btn-small btn-primary'>Create Task</button>
+</form>

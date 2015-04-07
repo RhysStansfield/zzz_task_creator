@@ -1,0 +1,13 @@
+label {
+  padding-top: 8px;
+}
+
+#user, #scheduled_for, #location {
+  width: 95%;
+}
+
+button {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-size: 105%;
+}
