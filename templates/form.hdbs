@@ -1,18 +1,35 @@
+
 <form id='create-task'>
   <input type='hidden' name='zzz_task_type' id='zzz_task_type' value='non_timed'>
 
+  <label for='task_creator[task_type]'>Task Type</label>
+  <select name='task_type' id='task_type'>
+    <option value='check_in'>Check In</option>
+    <option value='check_out'>Check Out</option>
+    <option value='tear_down'>Tear Down</option>
+    <option value='general_task'>Untimed</option>
+  </select>
+
   <label for='user'>User</label>
-  <select name='user' id='user'>
+  <select name='task_creator[user_id]' id='user'>
     {{#each users}}
       <option value='{{this.id}}'>{{this.name}}</option>
     {{/each}}
   </select>
 
-  <label for='scheduled_for'>Scheduled For</label>
-  <input type='text' name='scheduled_for' id='scheduled_for' />
+  <label for='scheduled_for_day'>Scheduled For Day</label>
+  <input type='text' name='task_creator[scheduled_for_day]' id='scheduled_for_day' />
+
+  <label for='scheduled_for_time'>Scheduled For Time</label>
+  <input type='time' name='task_creator[scheduled_for_time]' id='scheduled_for_time' />
 
   <label for='location'>Location</label>
-  <input type='text' name='location' id='location' />
+  <input type='text' name='task_creator[location]' id='location' />
 
   <button id='add-task' class='btn-small btn-primary'>Create Task</button>
 </form>
+
+
+<script type='text/javascript'>
+  $('#scheduled_for_day').datepicker();
+</script>

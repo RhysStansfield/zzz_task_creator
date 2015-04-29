@@ -4,7 +4,7 @@
     requests: {
       getActiveUsers: function() {
         return {
-          url: 'http://api.zzz.co.uk/users?active=true',
+          url: 'http://staging.zzz.co.uk/api/users?active=true&access_token=3b7023034a8f2602979118c3ca4609a5',
           type: 'GET',
           contentType: 'application/json'
         };
@@ -94,9 +94,10 @@
 
     showForm: function() {
       this.ajax('getActiveUsers').then(
-        function(userData) { this.switchTo('form', userData) },
+        function(userData) {
+          this.switchTo('form', userData)
+        },
         function() {
-
           services.notify('Could not fetch user list!', 'error');
 
           this.switchTo('form', { users: this.usersFake() });
