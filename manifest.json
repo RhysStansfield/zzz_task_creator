@@ -5,6 +5,16 @@
     "email": "r.stansfield@voc-8.com",
     "url": ""
   },
+  "domainWhitelist": ["staging.zzz.co.uk", "www.zzz.co.uk"],
+  "parameters": [
+    // comment this param out when testing with ZAT
+    {
+      "name": "token",
+      "type": "text",
+      "required": true
+      // "secure": true
+    }
+  ],
   "defaultLocale": "en",
   "private": true,
   "location": "ticket_sidebar",

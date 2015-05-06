@@ -1,9 +1,6 @@
-
 <form id='create-task'>
-  <input type='hidden' name='zzz_task_type' id='zzz_task_type' value='non_timed'>
-
-  <label for='task_creator[task_type]'>Task Type</label>
-  <select name='task_type' id='task_type'>
+  <label for='task_type'>Task Type</label>
+  <select name='task_creator[task_type]' id='task_type'>
     <option value='check_in'>Check In</option>
     <option value='check_out'>Check Out</option>
     <option value='tear_down'>Tear Down</option>
@@ -14,6 +11,7 @@
   <select name='task_creator[user_id]' id='user'>
     {{#each users}}
       <option value='{{this.id}}'>{{this.name}}</option>
+      }
     {{/each}}
   </select>
 

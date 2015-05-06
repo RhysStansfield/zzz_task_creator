@@ -4,15 +4,31 @@
     requests: {
       getActiveUsers: function() {
         return {
-          url: 'http://staging.zzz.co.uk/api/users?active=true&access_token=3b7023034a8f2602979118c3ca4609a5',
+          url: 'https://staging.zzz.co.uk/api/users?active=true',
+          // url: 'https://3a988591.ngrok.io/api/users?active=true',
+          headers: { "Authorization": "Basic " + this.setting('token') + ":" },
           type: 'GET',
+          // secure: true, // comment out when testing with zat
           contentType: 'application/json'
+        };
+      },
+
+      postFormData: function(newTaskData) {
+        return {
+          url: 'https://staging.zzz.co.uk/api/task_creator',
+          // url: 'https://3a988591.ngrok.io/api/task_creator',
+          headers: { "Authorization": "Basic " + this.setting('token') + ":" },
+          type: 'POST',
+          contentType: 'application/json',
+          // secure: true, // comment out when testing with zat
+          data: JSON.stringify(newTaskData)
         };
       }
     },
 
     events: {
-      'app.activated':'showForm'
+      'click #add-task': 'postToBeds',
+      'app.activated': 'showForm'
     },
 
     usersFake: function() {
@@ -95,7 +111,7 @@
     showForm: function() {
       this.ajax('getActiveUsers').then(
         function(userData) {
-          this.switchTo('form', userData)
+          this.switchTo('form', { users: userData });
         },
         function() {
           services.notify('Could not fetch user list!', 'error');
@@ -103,7 +119,29 @@
           this.switchTo('form', { users: this.usersFake() });
         }
       );
+    },
+
+    postToBeds: function(event) {
+      event.preventDefault();
+
+      var newTask = {
+        task_type: this.$('#task_type').val(),
+        user_id: this.$('#user').val(),
+        scheduled_for_day: this.$('#scheduled_for_day').val(),
+        scheduled_for_time: this.$('#scheduled_for_time').val(),
+        location: this.$('#location').val()
+      };
+
+      this.ajax('postFormData', newTask).then(
+        function(response) {
+          this.$('#create-task')[0].reset();
+          services.notify('Task created!');
+        },
+        function () {
+          services.notify('Could not create task!', 'error');
+        }
+      );
     }
   };
 
-}());
+} ());
