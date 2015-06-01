@@ -1,12 +1,4 @@
 <form id='create-task'>
-  <label for='task_type'>Task Type</label>
-  <select name='task_creator[task_type]' id='task_type'>
-    <option value='check_in'>Check In</option>
-    <option value='check_out'>Check Out</option>
-    <option value='tear_down'>Tear Down</option>
-    <option value='general_task'>Untimed</option>
-  </select>
-
   <label for='user'>User</label>
   <select name='task_creator[user_id]' id='user'>
     {{#each users}}
@@ -15,14 +7,20 @@
     {{/each}}
   </select>
 
+  <label for='title'>Title</label>
+  <input type='text' name='task_creator[title]' id='title' />
+
+  <label for='location'>Location</label>
+  <input type='text' name='task_creator[location]' id='location' />
+
+  <label for='details'>Details</label>
+  <textarea name='task_creator[details]' id='details' style='width: 306px; height: 109px;'></textarea>
+
   <label for='scheduled_for_day'>Scheduled For Day</label>
   <input type='text' name='task_creator[scheduled_for_day]' id='scheduled_for_day' />
 
   <label for='scheduled_for_time'>Scheduled For Time</label>
   <input type='time' name='task_creator[scheduled_for_time]' id='scheduled_for_time' />
-
-  <label for='location'>Location</label>
-  <input type='text' name='task_creator[location]' id='location' />
 
   <button id='add-task' class='btn-small btn-primary'>Create Task</button>
 </form>

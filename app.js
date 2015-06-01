@@ -4,8 +4,8 @@
     requests: {
       getActiveUsers: function() {
         return {
-          url: 'https://staging.zzz.co.uk/api/users?active=true',
-          // url: 'https://3a988591.ngrok.io/api/users?active=true',
+          url: 'https://www.zzz.co.uk/api/users?active=true',
+          // url: 'https://d152e937.ngrok.io/api/users?active=true',
           headers: { "Authorization": "Basic " + this.setting('token') + ":" },
           type: 'GET',
           // secure: true, // comment out when testing with zat
@@ -15,8 +15,8 @@
 
       postFormData: function(newTaskData) {
         return {
-          url: 'https://staging.zzz.co.uk/api/task_creator',
-          // url: 'https://3a988591.ngrok.io/api/task_creator',
+          url: 'https://www.zzz.co.uk/api/task_creator',
+          // url: 'https://d152e937.ngrok.io/api/task_creator',
           headers: { "Authorization": "Basic " + this.setting('token') + ":" },
           type: 'POST',
           contentType: 'application/json',
@@ -125,11 +125,12 @@
       event.preventDefault();
 
       var newTask = {
-        task_type: this.$('#task_type').val(),
         user_id: this.$('#user').val(),
+        title: this.$('#title').val(),
+        location: this.$('#location').val(),
+        details: this.$('#details').val(),
         scheduled_for_day: this.$('#scheduled_for_day').val(),
-        scheduled_for_time: this.$('#scheduled_for_time').val(),
-        location: this.$('#location').val()
+        scheduled_for_time: this.$('#scheduled_for_time').val()
       };
 
       this.ajax('postFormData', newTask).then(
@@ -141,6 +142,10 @@
           services.notify('Could not create task!', 'error');
         }
       );
+    },
+
+    eventId: function() {
+      console.log(this.ticketFields("Rental Id") + "BEWM");
     }
   };
 
