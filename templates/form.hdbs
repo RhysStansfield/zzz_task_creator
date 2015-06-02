@@ -1,6 +1,6 @@
 <form id='create-task'>
   <label for='user'>User</label>
-  <select name='task_creator[user_id]' id='user'>
+  <select name='general_task[user_id]' id='user'>
     {{#each users}}
       <option value='{{this.id}}'>{{this.name}}</option>
       }
@@ -8,19 +8,19 @@
   </select>
 
   <label for='title'>Title</label>
-  <input type='text' name='task_creator[title]' id='title' />
+  <input type='text' name='general_task[title]' id='title' />
 
   <label for='location'>Location</label>
-  <input type='text' name='task_creator[location]' id='location' />
+  <input type='text' name='general_task[location]' id='location' />
 
   <label for='details'>Details</label>
-  <textarea name='task_creator[details]' id='details' style='width: 306px; height: 109px;'></textarea>
+  <textarea name='general_task[details]' id='details' style='width: 306px; height: 109px;'></textarea>
 
   <label for='scheduled_for_day'>Scheduled For Day</label>
-  <input type='text' name='task_creator[scheduled_for_day]' id='scheduled_for_day' />
+  <input type='text' name='general_task[scheduled_for_day]' id='scheduled_for_day' />
 
   <label for='scheduled_for_time'>Scheduled For Time</label>
-  <input type='time' name='task_creator[scheduled_for_time]' id='scheduled_for_time' />
+  <input type='time' name='general_task[scheduled_for_time]' id='scheduled_for_time' />
 
   <button id='add-task' class='btn-small btn-primary'>Create Task</button>
 </form>
