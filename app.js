@@ -4,31 +4,31 @@
     requests: {
       getActiveUsers: function() {
         return {
-          url: 'https://www.zzz.co.uk/api/users?active=true',
-          // url: 'https://d152e937.ngrok.io/api/users?active=true',
-          headers: { "Authorization": "Basic " + this.setting('token') + ":" },
-          type: 'GET',
-          // secure: true, // comment out when testing with zat
+          url:         'https://www.zzz.co.uk/api/users?active=true',
+          // url:         'https://d152e937.ngrok.io/api/users?active=true',
+          headers:     { "Authorization": "Basic {{setting.token}}:" },
+          type:        'GET',
+          secure:      true, // comment out when testing with zat
           contentType: 'application/json'
         };
       },
 
       postFormData: function(newTaskData) {
         return {
-          url: 'https://www.zzz.co.uk/api/general_tasks',
-          // url: 'https://d152e937.ngrok.io/api/general_tasks',
-          headers: { "Authorization": "Basic " + this.setting('token') + ":" },
-          type: 'POST',
+          url:         'https://www.zzz.co.uk/api/general_tasks',
+          // url:         'https://d152e937.ngrok.io/api/general_tasks',
+          headers:     { "Authorization": "Basic {{setting.token}}:" },
+          type:        'POST',
           contentType: 'application/json',
-          // secure: true, // comment out when testing with zat
-          data: JSON.stringify(newTaskData)
+          secure:      true, // comment out when testing with zat
+          data:        JSON.stringify(newTaskData)
         };
       }
     },
 
     events: {
       'click #add-task': 'postToBeds',
-      'app.activated': 'showForm'
+      'app.activated':   'showForm'
     },
 
     showForm: function() {
@@ -66,10 +66,6 @@
         }
       );
     },
-
-    eventId: function() {
-      console.log(this.ticketFields("Rental Id") + "BEWM");
-    }
   };
 
 } ());

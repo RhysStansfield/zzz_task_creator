@@ -7,12 +7,11 @@
   },
   "domainWhitelist": ["staging.zzz.co.uk", "www.zzz.co.uk"],
   "parameters": [
-    // comment this param out when testing with ZAT
     {
       "name": "token",
       "type": "text",
-      "required": true
-      // "secure": true
+      "required": true,
+      "secure": true // comment this param out when testing with ZAT
     }
   ],
   "defaultLocale": "en",

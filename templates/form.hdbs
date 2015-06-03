@@ -3,7 +3,6 @@
   <select name='general_task[user_id]' id='user'>
     {{#each users}}
       <option value='{{this.id}}'>{{this.name}}</option>
-      }
     {{/each}}
   </select>
 
