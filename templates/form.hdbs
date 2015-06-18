@@ -6,7 +6,7 @@
     {{/each}}
   </select>
 
-  <label for='title'>Title</label>
+  <label for='title'>Type</label>
   <input type='text' name='general_task[title]' id='title' />
 
   <label for='location'>Location</label>

@@ -5,7 +5,7 @@
       getActiveUsers: function() {
         return {
           url:         'https://www.zzz.co.uk/api/users?active=true',
-          // url:         'https://d152e937.ngrok.io/api/users?active=true',
+          // url:         'https://d23b37af.ngrok.io/api/users?active=true',
           headers:     { "Authorization": "Basic {{setting.token}}:" },
           type:        'GET',
           secure:      true, // comment out when testing with zat
@@ -16,7 +16,7 @@
       postFormData: function(newTaskData) {
         return {
           url:         'https://www.zzz.co.uk/api/general_tasks',
-          // url:         'https://d152e937.ngrok.io/api/general_tasks',
+          // url:         'https://d23b37af.ngrok.io/api/general_tasks',
           headers:     { "Authorization": "Basic {{setting.token}}:" },
           type:        'POST',
           contentType: 'application/json',
@@ -28,10 +28,13 @@
 
     events: {
       'click #add-task': 'postToBeds',
-      'app.activated':   'showForm'
+      'app.activated':   'showForm',
+      'ticket.custom_field_27022572.changed': 'typeChanged'
     },
 
     showForm: function() {
+      this.ticketFields('custom_field_26659611').hide();
+
       this.ajax('getActiveUsers').then(
         function(userData) {
           this.switchTo('form', { users: userData });
@@ -66,6 +69,16 @@
         }
       );
     },
+
+    typeChanged: function() {
+      var typeField = this.ticket().customField('custom_field_27022572');
+      typeField = typeField.replace('_', ' ');
+      typeField = typeField.replace(/wifi|^.?| .?/gi, function(match) {
+        return match.toUpperCase();
+      });
+
+      this.$('#title').val(typeField);
+    }
   };
 
 } ());
