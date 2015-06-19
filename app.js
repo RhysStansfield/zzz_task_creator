@@ -5,7 +5,29 @@
       getActiveUsers: function() {
         return {
           url:         'https://www.zzz.co.uk/api/users?active=true',
-          // url:         'https://d23b37af.ngrok.io/api/users?active=true',
+          // url:         'https://0367cbee.ngrok.io/api/users?active=true',
+          headers:     { "Authorization": "Basic {{setting.token}}:" },
+          type:        'GET',
+          secure:      true, // comment out when testing with zat
+          contentType: 'application/json'
+        };
+      },
+
+      getProperty: function(propertyId) {
+        return {
+          url:         'https://www.zzz.co.uk/api/properties/' + propertyId,
+          // url:         'https://0367cbee.ngrok.io/api/properties/' + propertyId,
+          headers:     { "Authorization": "Basic {{setting.token}}:" },
+          type:        'GET',
+          secure:      true, // comment out when testing with zat
+          contentType: 'application/json'
+        };
+      },
+
+      getEvent: function(eventId) {
+        return {
+          url:         'https://www.zzz.co.uk/api/properties/' + eventId,
+          // url:         'https://0367cbee.ngrok.io/api/events/' + eventId,
           headers:     { "Authorization": "Basic {{setting.token}}:" },
           type:        'GET',
           secure:      true, // comment out when testing with zat
@@ -16,7 +38,7 @@
       postFormData: function(newTaskData) {
         return {
           url:         'https://www.zzz.co.uk/api/general_tasks',
-          // url:         'https://d23b37af.ngrok.io/api/general_tasks',
+          // url:         'https://0367cbee.ngrok.io/api/general_tasks',
           headers:     { "Authorization": "Basic {{setting.token}}:" },
           type:        'POST',
           contentType: 'application/json',
@@ -29,7 +51,8 @@
     events: {
       'click #add-task': 'postToBeds',
       'app.activated':   'showForm',
-      'ticket.custom_field_27022572.changed': 'typeChanged'
+      'ticket.custom_field_27022572.changed': 'typeChanged',
+      'ticket.custom_field_25728342.changed': 'referenceChanged'
     },
 
     showForm: function() {
@@ -78,6 +101,24 @@
       });
 
       this.$('#title').val(typeField);
+    },
+
+    referenceChanged: function() {
+      var reference = this.ticket().customField('custom_field_25728342');
+
+      if (reference.length != 4) {
+        return;
+      }
+
+      this.$('#reference-key').val(reference);
+
+      this.ajax('getProperty', reference).then(
+        function(propertyData) {
+          var address = propertyData.address;
+          this.$('.property-address').html(address);
+        },
+        function() {}
+      );
     }
   };
 

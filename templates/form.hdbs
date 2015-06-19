@@ -12,6 +12,11 @@
   <label for='location'>Location</label>
   <input type='text' name='general_task[location]' id='location' />
 
+  <label for='reference-key'>Reference</label>
+  <input type='text' name='general_task[reference_key]' id='reference-key' />
+
+  <div class='property-address'></div>
+
   <label for='details'>Details</label>
   <textarea name='general_task[details]' id='details' style='width: 306px; height: 109px;'></textarea>
 
