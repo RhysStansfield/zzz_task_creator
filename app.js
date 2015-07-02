@@ -1,70 +1,152 @@
 (function() {
 
   return {
+    requestMethods: {
+      utils: {
+        zatEnabled: false,
+
+        _baseUrl: function() {
+          return 'https://' + this.domainName + '/api';
+        },
+
+        _baseParams: function() {
+          var params = {
+            headers:     this.headerParams(),
+            contentType: 'application/json'
+          };
+
+          if (!this.zatEnabled) {
+            params.secure = true;
+          }
+
+          return params;
+        },
+
+        buildParams: function(url, type, data) {
+          var params = this._baseParams();
+
+          params.url  = url;
+          params.type = type;
+
+          if (type === 'POST' && data) {
+            params.data = data;
+          }
+
+          return params;
+        },
+
+        buildUrl: function(path) {
+          return this._baseUrl() + path;
+        },
+
+        headerParams: function() {
+          if (this.zatEnabled) {
+            return { 'Authorization': 'Basic ' + this.token + ':' };
+          }
+
+          return { 'Authorization': "Basic {{setting.token}}:" };
+        }
+      },
+
+      GET: function(path) {
+        var fullUrl = this.utils.buildUrl(path);
+
+        return this.utils.buildParams(fullUrl, 'GET');
+      },
+
+      POST: function(path, data) {
+        var fullUrl = this.utils.buildUrl(path);
+
+        return this.utils.buildParams(fullUrl, 'POST', JSON.stringify(data));
+      }
+    },
+
     requests: {
       getActiveUsers: function() {
-        return {
-          url:         'https://www.zzz.co.uk/api/users?active=true',
-          // url:         'https://0367cbee.ngrok.io/api/users?active=true',
-          headers:     { "Authorization": "Basic {{setting.token}}:" },
-          type:        'GET',
-          secure:      true, // comment out when testing with zat
-          contentType: 'application/json'
-        };
+        return this.requestMethods.GET('/users?active=true');
       },
 
       getProperty: function(propertyId) {
-        return {
-          url:         'https://www.zzz.co.uk/api/properties/' + propertyId,
-          // url:         'https://0367cbee.ngrok.io/api/properties/' + propertyId,
-          headers:     { "Authorization": "Basic {{setting.token}}:" },
-          type:        'GET',
-          secure:      true, // comment out when testing with zat
-          contentType: 'application/json'
-        };
+        return this.requestMethods.GET('/properties/' + propertyId);
+      },
+
+      getEvents: function() {
+        return this.requestMethods.GET('/events?current_events=true');
       },
 
       getEvent: function(eventId) {
-        return {
-          url:         'https://www.zzz.co.uk/api/properties/' + eventId,
-          // url:         'https://0367cbee.ngrok.io/api/events/' + eventId,
-          headers:     { "Authorization": "Basic {{setting.token}}:" },
-          type:        'GET',
-          secure:      true, // comment out when testing with zat
-          contentType: 'application/json'
-        };
+        return this.requestMethods.GET('/events/' + eventId);
+      },
+
+      getRental: function(eventId, reference) {
+        return this.requestMethods.GET(
+          '/rentals/find?event_id=' + eventId + '&reference=' + reference
+        );
       },
 
       postFormData: function(newTaskData) {
-        return {
-          url:         'https://www.zzz.co.uk/api/general_tasks',
-          // url:         'https://0367cbee.ngrok.io/api/general_tasks',
-          headers:     { "Authorization": "Basic {{setting.token}}:" },
-          type:        'POST',
-          contentType: 'application/json',
-          secure:      true, // comment out when testing with zat
-          data:        JSON.stringify(newTaskData)
-        };
+        return this.requestMethods.POST('/general_tasks', newTaskData);
       }
     },
 
     events: {
+      'app.activated':   'init',
       'click #add-task': 'postToBeds',
-      'app.activated':   'showForm',
       'ticket.custom_field_27022572.changed': 'typeChanged',
-      'ticket.custom_field_25728342.changed': 'referenceChanged'
+      'ticket.custom_field_25728342.changed': 'setReference',
+      'ticket.custom_field_27112811.changed': 'findEvent'
+    },
+
+    init: function() {
+      this.hideTicketFields();
+      this.setUpEnvironment();
+      this.showForm();
+      this.fetchEventDetails();
+    },
+
+    setUpEnvironment: function() {
+      if (this.isZatEnabled()) {
+        this.requestMethods.utils.zatEnabled = true;
+        this.requestMethods.utils.token      = this.setting('token');
+      }
+      this.requestMethods.utils.domainName = this.setting('domainName');
     },
 
     showForm: function() {
-      this.ticketFields('custom_field_26659611').hide();
-
       this.ajax('getActiveUsers').then(
         function(userData) {
           this.switchTo('form', { users: userData });
+          this.setReference();
         },
         function() {
           services.notify('Could not fetch user list!', 'error');
         }
+      );
+    },
+
+    hideTicketFields: function() {
+      this.ticketFields('custom_field_26659611').hide();
+      this.ticketFields('custom_field_26659111').hide();
+      this.ticketFields('custom_field_26659121').hide();
+    },
+
+    fetchEventDetails: function() {
+      var eventId = this.ticket().customField('custom_field_26659111');
+
+      if (eventId.length === 0) {
+        return;
+      }
+
+      this.ajax('getEvent', eventId).then(
+        function(eventData) {
+          var nameAndYear      = eventData.name + ' ' + eventData.year,
+              eventTicketField = this.ticket().customField('custom_field_27112811');
+
+          if (nameAndYear != eventTicketField) {
+            this.ticket().customField('custom_field_27112811', nameAndYear);
+          }
+        },
+        function() {}
       );
     },
 
@@ -87,7 +169,7 @@
           this.$('#create-task')[0].reset();
           services.notify('Task created!');
         },
-        function () {
+        function() {
           services.notify('Could not create task!', 'error');
         }
       );
@@ -103,8 +185,14 @@
       this.$('#title').val(typeField);
     },
 
-    referenceChanged: function() {
-      var reference = this.ticket().customField('custom_field_25728342');
+    setReference: function() {
+      var reference = this.ticket().customField('custom_field_25728342'),
+          refPieces;
+
+      if (reference.search(/-/) >= 0) {
+        refPieces = reference.split(/-/);
+        reference = refPieces[refPieces.length - 1];
+      }
 
       if (reference.length != 4) {
         return;
@@ -118,6 +206,47 @@
           this.$('.property-address').html(address);
         },
         function() {}
+      );
+    },
+
+    findEvent: function() {
+      var eventName = this.ticket().customField('custom_field_27112811');
+
+      if (!/\d{4}$/.test(eventName)) {
+        return;
+      }
+
+      this.ajax('getEvent', eventName).then(
+        function(eventData) {
+          this.ticket().customField('custom_field_26659111', eventData.id);
+          this.findRental();
+        },
+        function() {
+          services.notify('Could not find event - double check spelling and year', 'error');
+        }
+      );
+    },
+
+    findRental: function() {
+      var eventId   = this.ticket().customField('custom_field_26659111'),
+          reference = this.$('#reference-key').val();
+
+      if (eventId.length === 0 || reference.length != 4) {
+        return;
+      }
+
+      this.ajax('getRental', eventId, reference).then(
+        function(rentalData) {
+          var rentalCompany = rentalData.booking.company,
+              companyField  = this.ticket().customField('custom_field_27112821');
+
+          if (rentalCompany != companyField){
+            this.ticket().customField('custom_field_27112821', rentalCompany);
+          }
+        },
+        function() {
+          this.ticket().customField('custom_field_27112821', '');
+        }
       );
     }
   };
